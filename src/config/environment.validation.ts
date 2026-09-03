@@ -28,6 +28,20 @@ class EnvironmentVariables {
 
   @IsString()
   EUREKA_INSTANCE_HOSTNAME = 'localhost';
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_REGION!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_S3_BUCKET!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(3600)
+  AWS_S3_UPLOAD_URL_DURATION_SECONDS = 600;
 }
 
 export function validateEnvironment(config: Record<string, unknown>) {

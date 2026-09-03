@@ -8,6 +8,7 @@ import {
 import type { Response } from 'express';
 import { ErrorCode } from '../constants/error-code.constant';
 import { ApiResponseDto } from '../dto/api-response.dto';
+import { AppException } from '../exceptions/app.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -15,6 +16,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
+
+    if (exception instanceof AppException) {
+      const error = exception.definition;
+      response
+        .status(error.statusCode)
+        .json(new ApiResponseDto({ code: error.code, message: error.message }));
+      return;
+    }
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();

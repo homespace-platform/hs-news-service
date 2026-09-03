@@ -21,6 +21,7 @@ export class GatewayAuthenticationGuard implements CanActivate {
     request.user = {
       userId,
       email: this.header(request, 'x-user-email'),
+      name: this.header(request, 'x-user-name'),
       role: this.header(request, 'x-user-role'),
       authorities: authorities
         ? authorities
