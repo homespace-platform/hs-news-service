@@ -38,6 +38,6 @@ db.dropDatabase()
 - Qua Gateway: `GET http://localhost:8080/api/v1/news/ping`
 - Có xác thực qua Gateway: `GET http://localhost:8080/api/v1/news/auth/me`
 
-Các endpoint admin không tự verify JWT. Gateway verify JWT và chuyển identity qua `X-User-Id`, `X-User-Email`, `X-User-Name`, `X-User-Role`, `X-User-Authorities`. Role phải là `ADMIN`.
+Các endpoint admin không tự verify JWT. Gateway verify JWT và chuyển identity qua `X-User-Id`, `X-User-Email`, `X-User-Name`, `X-User-Name-B64`, `X-User-Role`, `X-User-Authorities`. News service ưu tiên `X-User-Name-B64` để giữ nguyên tên Unicode UTF-8; `X-User-Name` được giữ làm fallback tương thích. Role phải là `ADMIN`.
 
 `EUREKA_INSTANCE_HOSTNAME=localhost` bật chế độ tự tìm IPv4 physical để đăng ký Eureka, tương đương `eureka.instance.prefer-ip-address=true` của các Java service. Có thể đặt IP/hostname cụ thể để override khi chạy trong Docker hoặc VM.
