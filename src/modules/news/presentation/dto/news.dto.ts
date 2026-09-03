@@ -137,6 +137,7 @@ export interface NewsResponse {
   category: NewsCategory;
   status: NewsStatus;
   featured: boolean;
+  views: number;
   tags: string[];
   contentBlocks: NewsContentBlock[];
   thumbnailUrl: string | null;

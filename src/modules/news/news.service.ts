@@ -80,6 +80,21 @@ export class NewsService {
     return this.toResponse(this.requireArticle(article));
   }
 
+  async recordView(slug: string): Promise<{ views: number }> {
+    const article = await this.articles
+      .findOneAndUpdate(
+        {
+          slug: slug.trim().toLowerCase(),
+          status: 'PUBLISHED',
+          active: true,
+        },
+        { $inc: { views: 1 } },
+        { new: true },
+      )
+      .exec();
+    return { views: this.requireArticle(article).views ?? 0 };
+  }
+
   async getAdmin(newsId: string): Promise<NewsResponse> {
     const article = await this.articles
       .findOne({ _id: newsId, active: true })
@@ -319,6 +334,7 @@ export class NewsService {
       category: article.category,
       status: article.status,
       featured: article.featured,
+      views: article.views ?? 0,
       tags: article.tags,
       contentBlocks: article.contentBlocks,
       thumbnailUrl:
@@ -342,6 +358,7 @@ export class NewsService {
       category: response.category,
       status: response.status,
       featured: response.featured,
+      views: response.views,
       tags: response.tags,
       thumbnailUrl: response.thumbnailUrl,
       authorName: response.authorName,

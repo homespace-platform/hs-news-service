@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiResponseDto } from '../../../common/dto/api-response.dto';
 import type { PageResponseDto } from '../../../common/dto/page-response.dto';
 import { NewsService } from '../news.service';
@@ -29,5 +29,10 @@ export class PublicNewsController {
     return new ApiResponseDto({
       result: await this.news.getPublishedBySlug(slug),
     });
+  }
+
+  @Post(':slug/view')
+  async recordView(@Param('slug') slug: string): Promise<ApiResponseDto<{ views: number }>> {
+    return new ApiResponseDto({ result: await this.news.recordView(slug) });
   }
 }
