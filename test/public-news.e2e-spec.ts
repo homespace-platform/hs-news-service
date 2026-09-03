@@ -18,6 +18,7 @@ describe('Public news routes (e2e)', () => {
       totalPages: 0,
       hasMore: false,
     })),
+    recordView: jest.fn(async () => ({ views: 1 })),
   };
 
   beforeAll(async () => {
@@ -40,5 +41,11 @@ describe('Public news routes (e2e)', () => {
 
   it('rejects public page sizes above 50', async () => {
     await request(app.getHttpServer()).get('/public/news?size=51').expect(400);
+  });
+
+  it('increments a published article when opened', async () => {
+    await request(app.getHttpServer()).post('/public/news/tin-moi/view').expect(201);
+
+    expect(news.recordView).toHaveBeenCalledWith('tin-moi');
   });
 });

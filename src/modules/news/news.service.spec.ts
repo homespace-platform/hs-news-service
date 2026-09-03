@@ -134,6 +134,31 @@ describe('NewsService', () => {
     });
   });
 
+  it('increments the published article view count atomically', async () => {
+    const article = document({
+      _id: 'news-1',
+      slug: 'tin-moi',
+      status: 'PUBLISHED',
+      active: true,
+      views: 5,
+      media: [],
+    });
+    const query = { exec: jest.fn(async () => article) };
+    const model = {
+      findOneAndUpdate: jest.fn(() => query),
+    };
+    const service = new NewsService(model as never, {} as never);
+
+    const response = await service.recordView('tin-moi');
+
+    expect(model.findOneAndUpdate).toHaveBeenCalledWith(
+      { slug: 'tin-moi', status: 'PUBLISHED', active: true },
+      { $inc: { views: 1 } },
+      { new: true },
+    );
+    expect(response).toEqual({ views: 5 });
+  });
+
   it('returns the existing page envelope for published articles', async () => {
     const article = {
       _id: 'news-1',

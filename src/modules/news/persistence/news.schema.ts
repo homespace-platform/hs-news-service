@@ -81,6 +81,9 @@ export class NewsArticle {
   @Prop({ default: false })
   featured!: boolean;
 
+  @Prop({ default: 0, min: 0 })
+  views!: number;
+
   @Prop({ type: [String], default: [] })
   tags!: string[];
 
