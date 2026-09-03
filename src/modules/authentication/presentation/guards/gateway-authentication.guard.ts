@@ -21,7 +21,9 @@ export class GatewayAuthenticationGuard implements CanActivate {
     request.user = {
       userId,
       email: this.header(request, 'x-user-email'),
-      name: this.header(request, 'x-user-name'),
+      name:
+        this.decodeDisplayName(this.header(request, 'x-user-name-b64')) ??
+        this.header(request, 'x-user-name'),
       role: this.header(request, 'x-user-role'),
       authorities: authorities
         ? authorities
@@ -37,5 +39,14 @@ export class GatewayAuthenticationGuard implements CanActivate {
     const value = request.headers[name];
     const normalized = Array.isArray(value) ? value[0] : value;
     return normalized?.trim() || undefined;
+  }
+
+  private decodeDisplayName(value: string | undefined): string | undefined {
+    if (!value) return undefined;
+    try {
+      return Buffer.from(value, 'base64').toString('utf8') || undefined;
+    } catch {
+      return undefined;
+    }
   }
 }

@@ -48,6 +48,17 @@ describe('AppController (e2e)', () => {
       });
   });
 
+  it('/auth/me (GET) decodes a UTF-8 display name from the gateway', () => {
+    return request(app.getHttpServer())
+      .get('/auth/me')
+      .set('X-User-Id', 'user-123')
+      .set('X-User-Name-B64', Buffer.from('Tuấn Đào', 'utf8').toString('base64'))
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.result.name).toBe('Tuấn Đào');
+      });
+  });
+
   afterEach(async () => {
     await app.close();
   });
