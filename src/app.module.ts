@@ -5,6 +5,8 @@ import { validateEnvironment } from './config/environment.validation';
 import { EurekaModule } from './infrastructure/discovery/eureka.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { HealthModule } from './modules/health/health.module';
+import { MediaModule } from './modules/media/media.module';
+import { NewsModule } from './modules/news/news.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { HealthModule } from './modules/health/health.module';
     EurekaModule,
     HealthModule,
     AuthenticationModule,
+    MediaModule,
+    NewsModule,
   ],
 })
 export class AppModule {}

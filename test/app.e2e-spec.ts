@@ -32,6 +32,7 @@ describe('AppController (e2e)', () => {
       .get('/auth/me')
       .set('X-User-Id', 'user-123')
       .set('X-User-Email', 'user@homespace.vn')
+      .set('X-User-Name', 'Home Space User')
       .set('X-User-Role', 'USER')
       .set('X-User-Authorities', 'NEWS_READ,NEWS_WRITE')
       .expect(200)
@@ -40,6 +41,7 @@ describe('AppController (e2e)', () => {
         result: {
           userId: 'user-123',
           email: 'user@homespace.vn',
+          name: 'Home Space User',
           role: 'USER',
           authorities: ['NEWS_READ', 'NEWS_WRITE'],
         },
