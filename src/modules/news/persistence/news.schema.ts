@@ -102,6 +102,12 @@ export class NewsArticle {
   @Prop({ type: Date, default: null })
   publishedAt!: Date | null;
 
+  @Prop({ type: String, default: null })
+  publicationEventId!: string | null;
+
+  @Prop({ type: Date, default: null })
+  publicationSentAt!: Date | null;
+
   @Prop({ default: true })
   active!: boolean;
 
@@ -115,4 +121,5 @@ export const NewsArticleSchema = SchemaFactory.createForClass(NewsArticle);
 
 NewsArticleSchema.index({ slug: 1 }, { unique: true });
 NewsArticleSchema.index({ active: 1, status: 1, publishedAt: -1 });
+NewsArticleSchema.index({ publicationEventId: 1, publicationSentAt: 1 });
 NewsArticleSchema.index({ active: 1, category: 1 });

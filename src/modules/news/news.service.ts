@@ -44,8 +44,9 @@ export class NewsService {
     );
 
     try {
+      const id = randomUUID();
       const article = await this.articles.create({
-        _id: randomUUID(),
+        _id: id,
         title: request.title.trim(),
         slug,
         summary: request.summary.trim(),
@@ -58,6 +59,7 @@ export class NewsService {
         authorId: user.userId,
         authorName: user.name?.trim() || user.email?.trim() || 'Admin',
         publishedAt: request.status === 'PUBLISHED' ? new Date() : null,
+        publicationEventId: request.status === 'PUBLISHED' ? `news_${id}` : null,
         active: true,
       });
       return this.toResponse(article);
@@ -161,6 +163,8 @@ export class NewsService {
     this.validateContent(request);
     const resolved = await this.resolveContent(user.userId, request);
 
+    const wasPublished = article.status === 'PUBLISHED';
+
     article.title = request.title.trim();
     article.slug = slug;
     article.summary = request.summary.trim();
@@ -174,6 +178,14 @@ export class NewsService {
       request.status === 'PUBLISHED'
         ? article.publishedAt ?? new Date()
         : null;
+    if (!article.publicationEventId && wasPublished && request.status === 'DRAFT') {
+      // Existing published articles predate publication events; do not notify on republish.
+      article.publicationEventId = `news_${article._id}`;
+      article.publicationSentAt = new Date();
+    } else if (!article.publicationEventId && request.status === 'PUBLISHED' && !wasPublished) {
+      // shortcut: old drafts have no publication history; migrate it if pre-upgrade republishing matters.
+      article.publicationEventId = `news_${article._id}`;
+    }
     try {
       return this.toResponse(await article.save());
     } catch (error) {

@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { MediaModule } from '../media/media.module';
 import { NewsService } from './news.service';
+import { NewsPublicationPublisher } from './news-publication.publisher';
 import {
   NEWS_ARTICLE_MODEL,
   NewsArticleSchema,
@@ -19,6 +20,6 @@ import { PublicNewsController } from './presentation/public-news.controller';
     ]),
   ],
   controllers: [NewsAdminController, PublicNewsController],
-  providers: [NewsService],
+  providers: [NewsService, NewsPublicationPublisher],
 })
 export class NewsModule {}

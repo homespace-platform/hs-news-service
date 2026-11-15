@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsString,
   IsUrl,
+  Matches,
   Max,
   Min,
   validateSync,
@@ -37,6 +38,14 @@ class EnvironmentVariables {
   @IsNotEmpty()
   AWS_S3_BUCKET!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  KAFKA_BROKERS!: string;
+
+  @IsString()
+  @Matches(/^(?!\.{1,2}$)[a-zA-Z0-9._-]{1,249}$/)
+  KAFKA_NEWS_TOPIC = 'homespace.news.events.v1';
+
   @Type(() => Number)
   @IsInt()
   @Min(1)
@@ -52,6 +61,10 @@ export function validateEnvironment(config: Record<string, unknown>) {
 
   if (errors.length > 0) {
     throw new Error(`Invalid environment configuration: ${errors.toString()}`);
+  }
+
+  if (validated.KAFKA_BROKERS.split(',').some((broker) => !broker.trim())) {
+    throw new Error('Invalid environment configuration: KAFKA_BROKERS');
   }
 
   return validated;

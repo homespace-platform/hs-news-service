@@ -58,7 +58,7 @@ export class MediaService {
     }
 
     const storageId = randomUUID();
-    const objectKey = `news/${storageId}.${extension}`;
+    const objectKey = `public/news/${storageId}.${extension}`;
     await this.assets.create({
       _id: storageId,
       originalName: request.fileName.trim(),

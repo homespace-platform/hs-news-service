@@ -45,7 +45,7 @@ const resolvedAssets = [
   },
 ];
 
-function document(values: Record<string, unknown>) {
+function document<T extends Record<string, unknown>>(values: T) {
   return {
     ...values,
     save: jest.fn(async function (this: Record<string, unknown>) {
@@ -88,6 +88,9 @@ describe('NewsService', () => {
     expect(response.publishedAt).toBeInstanceOf(Date);
     expect(response.thumbnailUrl).toBe('https://cdn.example/thumbnail.webp');
     expect(response.media).toHaveLength(2);
+    expect(model.create).toHaveBeenCalledWith(expect.objectContaining({
+      publicationEventId: `news_${response.id}`,
+    }));
   });
 
   it('rejects a duplicate slug before resolving media', async () => {
@@ -211,6 +214,8 @@ describe('NewsService', () => {
       status: 'DRAFT',
       active: true,
       publishedAt: null,
+      publicationEventId: null as string | null,
+      publicationSentAt: null as Date | null,
       media: [],
       authorId: 'admin-1',
       authorName: 'Admin',
@@ -238,6 +243,21 @@ describe('NewsService', () => {
 
     expect(firstPublishedAt).toBeInstanceOf(Date);
     expect(article.publishedAt).toBe(firstPublishedAt);
+    expect(article.publicationEventId).toBe('news_news-1');
+    expect(article.publicationSentAt).toBeNull();
+
+    await service.update(
+      { userId: 'admin-1', role: 'ADMIN', authorities: [] },
+      'news-1',
+      { ...publishedRequest, status: 'DRAFT' },
+    );
+    await service.update(
+      { userId: 'admin-1', role: 'ADMIN', authorities: [] },
+      'news-1',
+      publishedRequest,
+    );
+    expect(article.publicationEventId).toBe('news_news-1');
+    expect(article.publicationSentAt).toBeNull();
   });
 
   it('soft deletes an article', async () => {

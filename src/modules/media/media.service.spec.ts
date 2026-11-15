@@ -18,6 +18,29 @@ function config(): ConfigService {
 }
 
 describe('MediaService', () => {
+  it('creates news uploads in the public S3 prefix', async () => {
+    const model = { create: jest.fn(async (asset: { objectKey: string }) => asset) };
+    const service = new MediaService(
+      model as never,
+      config(),
+      new S3Client({
+        region: 'ap-southeast-1',
+        credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
+      }),
+    );
+
+    const result = await service.createUpload('admin-1', {
+      fileName: 'photo.webp',
+      contentType: 'image/webp',
+      size: 1024,
+    });
+
+    expect(result.objectKey).toMatch(/^public\/news\/[0-9a-f-]+\.webp$/);
+    expect(model.create).toHaveBeenCalledWith(
+      expect.objectContaining({ objectKey: result.objectKey }),
+    );
+  });
+
   it('rejects files that are not supported news images', async () => {
     const model = { create: jest.fn() };
     const service = new MediaService(
