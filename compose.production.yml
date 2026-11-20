@@ -1,0 +1,25 @@
+services:
+    hs-news-service:
+        image: ${NEWS_IMAGE:?}
+        pull_policy: always
+        restart: unless-stopped
+        mem_limit: 512m
+        environment:
+            NODE_ENV: ${NODE_ENV:?}
+            PORT: ${PORT:?}
+            SERVICE_NAME: ${SERVICE_NAME:?}
+            MONGODB_URI: ${MONGODB_URI:?}
+            EUREKA_CLIENT_SERVICE_URL: ${EUREKA_CLIENT_SERVICE_URL:?}
+            EUREKA_INSTANCE_HOSTNAME: ${EUREKA_INSTANCE_HOSTNAME:?}
+            KAFKA_BROKERS: ${KAFKA_BROKERS:?}
+            KAFKA_NEWS_TOPIC: ${KAFKA_NEWS_TOPIC:?}
+            AWS_REGION: ${AWS_REGION:?}
+            AWS_S3_BUCKET: ${AWS_S3_BUCKET:?}
+            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?}
+            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?}
+            AWS_S3_UPLOAD_URL_DURATION_SECONDS: ${AWS_S3_UPLOAD_URL_DURATION_SECONDS:?}
+
+networks:
+    default:
+        external: true
+        name: hs-network
