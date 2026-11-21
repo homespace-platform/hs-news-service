@@ -1,14 +1,12 @@
 # HomeSpace News Service — Codex Instructions
 
-<!-- BEGIN: HomeSpace engineering standards -->
-## HomeSpace engineering standards
+## Engineering standards
 
 - Preserve business invariants, public contracts and backward compatibility. Keep authentication, authorization, input validation and error handling intact.
 - Protect secrets and sensitive data in code, commits, tests, logs and reports. Treat third-party hooks as untrusted until reviewed and explicitly authorized.
 - Change production configuration, deploy or run destructive data operations only when explicitly authorized for the target environment.
 - Keep review tasks read-only unless the developer requests fixes.
 - Run targeted verification first. Broaden coverage when the risk or affected interfaces warrant it. Report checks that ran and any unverified behavior.
-<!-- END: HomeSpace engineering standards -->
 
 ## Scope
 
@@ -42,7 +40,7 @@ NestJS service (MongoDB via Mongoose, S3 for media) with modules under `src/modu
 ## News and Media
 
 - Publishing: articles are `DRAFT` or `PUBLISHED` with `publishedAt` and an `active` flag. Public reads (`public/news`) must return only published, active articles. Do not leak drafts or inactive articles through public endpoints or by slug.
-- Preserve public API compatibility used by `hs-web-app` and `hs-admin-portal`: paths, query parameters, response fields and slug behavior. The `view` counter endpoint is public; keep it safe against abuse and non-published articles.
+- Preserve public API compatibility used by the public and admin clients: paths, query parameters, response fields and slug behavior. The `view` counter endpoint is public; keep it safe against abuse and non-published articles.
 - Media uses S3 presigned upload and a completion step that checks the stored object (content type, existence). Keep the content-type allowlist, size limits and the completion verification. Do not return long-lived credentials or make objects broader than required.
 - MongoDB data belongs to this service only. Preserve indexes (for example `active, status, publishedAt`) and avoid destructive migrations. Do not access other services' databases.
 
@@ -57,6 +55,10 @@ NestJS service (MongoDB via Mongoose, S3 for media) with modules under `src/modu
 - Compile or typecheck affected modules where useful.
 - Do not run full builds for small isolated changes.
 - Do not start external infrastructure without necessity.
+
+## Skills
+
+Use news-api-review for an explicit review in the scope described by the skill.
 
 ## Completion
 
