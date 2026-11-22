@@ -7,10 +7,10 @@ GitHub Actions lint/test/build rồi push image lên Docker Hub. Dokploy chạy 
 - `Dockerfile`: Node 24, build NestJS, runtime production dependencies, user `node`, port `8083`, healthcheck `/ping`.
 - `.dockerignore`: chỉ đưa build inputs vào image, loại env và credential files.
 - `compose.production.yml`: `${NEWS_IMAGE:?}`, `pull_policy: always`, restart `unless-stopped`, memory limit 512 MiB; tự nối `hs-network`, không cần alias hoặc Advanced → Networks.
-- `.env.dokploy`: file riêng tư, Git ignore; giữ nguyên `.env` và `.env.example` dành cho dev.
+- `.env.prod`: file riêng tư, Git ignore; giữ nguyên `.env` và `.env.example` dành cho dev.
 - `.github/workflows/publish-image.yml`: chỉ lint/test/build/push, không gọi deploy API. Push tag SHA và `latest` trên `master`; pull request chỉ kiểm tra/build.
 
-Đặt `NEWS_IMAGE=nvminh162/hs-news-service:latest` ở dòng đầu `.env.dokploy`. Compose yêu cầu biến image và đủ **13 biến runtime** bằng `${VARIABLE:?}`; thiếu hoặc rỗng sẽ báo lỗi, không có fallback.
+Đặt `NEWS_IMAGE=nvminh162/hs-news-service:latest` ở dòng đầu `.env.prod`. Compose yêu cầu biến image và đủ **13 biến runtime** bằng `${VARIABLE:?}`; thiếu hoặc rỗng sẽ báo lỗi, không có fallback.
 
 | Biến | Giá trị / nguồn |
 | --- | --- |
@@ -30,7 +30,7 @@ News phát sự kiện lên topic News; Core xử lý broadcast rồi phát noti
 
 1. Docker Hub: chuẩn bị repository **`nvminh162/hs-news-service`**. Nếu image private, cấu hình registry pull credential riêng trên Dokploy.
 2. GitHub repo `homespace-platform/hs-news-service`: cấp Actions secrets `DOCKERHUB_USERNAME` và `DOCKERHUB_TOKEN` có quyền push.
-3. Review rồi commit/push các file deploy; giữ `.env.dokploy` ngoài Git.
+3. Review rồi commit/push các file deploy; giữ `.env.prod` ngoài Git.
 4. Chờ workflow **Build and publish News Service** thành công, xác nhận image tag `latest` đã được publish. Không cần MongoDB/AWS secrets trong Actions.
 
 ## 3. Deploy Compose Raw
@@ -39,7 +39,7 @@ News phát sự kiện lên topic News; Core xử lý broadcast rồi phát noti
 2. Nếu có Application News cũ, lưu cấu hình/webhook rồi Stop trước khi chạy Compose mới; không chạy hai bản song song.
 3. **Projects → homespace → production → Create Service → Docker Compose**, tên `hs-news-service`, cùng server với infra.
 4. General → **Raw**, dán toàn bộ [compose.production.yml](../compose.production.yml), chọn Compose Type **Docker Compose**, không chọn Stack → Save. Không dùng Application/Nixpacks.
-5. **Environment**: dán nguyên `.env.dokploy`, gồm `NEWS_IMAGE` ở dòng đầu → Save. Single quote là cú pháp dotenv; file local không tự cập nhật Dokploy.
+5. **Environment**: dán nguyên `.env.prod`, gồm `NEWS_IMAGE` ở dòng đầu → Save. Single quote là cú pháp dotenv; file local không tự cập nhật Dokploy.
 6. **Preview Compose**: service `hs-news-service`, đúng image, đủ env, default network external `hs-network`, không có host ports/volumes. Giữ tắt Isolated Deployment và xác nhận Preview vẫn giữ mạng chung.
 7. Không thêm domain public. Gateway đã có route `lb://hs-news-service` cho public/admin/diagnostics.
 8. **Deploy**, chờ container healthy và Logs có `Registered ... with Eureka`. Bắt đầu với một instance; kiểm tra thực tế trước khi thay đổi tài nguyên hoặc scale.
